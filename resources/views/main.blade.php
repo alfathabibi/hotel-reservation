@@ -36,9 +36,11 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="/assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/css/dropzone.min.css" type="text/css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
   <!-- JQuery -->
   <script src="/assets/js/jquery.js"></script>
   <script src="/assets/js/dropzone.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
