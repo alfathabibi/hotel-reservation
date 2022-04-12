@@ -59,3 +59,4 @@ Route::get('customers', [CustomerController::class, 'index']);
 
 // entertainment page
 Route::get('entertainment', [Entertainment::class, 'index']);
+Route::post('entertainment/create', [Entertainment::class, 'CreateEntertainment']);
