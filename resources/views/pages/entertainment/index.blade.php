@@ -140,33 +140,26 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteEntertainmentModal" tabindex="-1" aria-labelledby="deleteEntertainmentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <form action="" method="post">
-                    @csrf
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col text-center">
-                                <i class="fas fa-times-circle text-danger fs-1"></i>
-                                <h4>Are You Sure?</h4>
-                            </div>
-                        </div>
-                        <div class="row justify-content-center">
-                            <div class="col text-center">
-                                <p>Do you really want to delete ___ entertainment?</p>
-                                <input type="hidden" name="id" id="entertainment_id">
-                            </div>
-                        </div>
-                        <div class="row justify-content-center">
-                            <div class="col text-center">
-                                <button type="submit" class="btn btn-danger">Yes</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                            </div>
-                        </div>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <h4>Are You Sure?</h4>
                     </div>
-                </form>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <p class="m-0">Do you really want to delete <b id="delete-entertainment-nama"></b> from the entertainment list?</p>
+                        <p>Deleted data cannot be recovered again!</p>
+                        <input type="hidden" name="delete-entertainment-input" id="delete-entertainment-input">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary m-0 mx-2" data-bs-dismiss="modal" id="close-delete-enterteinment-button">Cancel</button>
+                    <button type="button" class="btn btn-danger m-0" onclick="onClickDeleteModal()">Delete</button>
+                </div>
             </div>
         </div>
     </div>
@@ -197,8 +190,42 @@
         addRemoveLinks: true
     });
 
+    const onClickDeleteModal = async () => {
+        const id = document.querySelector('#delete-entertainment-input').value
+        const deleteEntertainment = await fetch('/entertainment/delete', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id
+            })
+        });
+        if (deleteEntertainment.status !== 200) {
+            document.querySelector('#toast-title').classList.add('text-danger')
+            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Data'
+            document.querySelector('#toast-body').innerHTML = 'The entertainment data failed to be deleted!'
+            showToast()
+            document.querySelector('#close-delete-enterteinment-button').click()
+            return
+        }
+        table.rows(`.tr-${id}`).remove().draw();
+        document.querySelector('#toast-title').classList.remove('text-danger')
+        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Data'
+        document.querySelector('#toast-body').innerHTML = 'The entertainment data has been successfully deleted!'
+
+        showToast()
+        document.querySelector('#close-delete-enterteinment-button').click()
+    }
+
+    const onClickDelete = async (id, nama) => {
+        document.querySelector('#delete-entertainment-nama').innerHTML = nama
+        document.querySelector('#delete-entertainment-input').value = id
+    }
+
     const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
-        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button"><i class="fas fa-trash-alt"></i></button></td></tr>`
+        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteEntertainmentModal" onclick="onClickDelete(${id}, '${nama}')"><i class="fas fa-trash-alt"></i></button></td></tr>`
     }
 
     const formatDate = (tanggal) => {
@@ -216,12 +243,12 @@
     }
 
     const getAllData = async () => {
-        const asd = await fetch('/entertainment/read-all', {
+        const getAllEntertainment = await fetch('/entertainment/read-all', {
             headers: {
                 'X-CSRF-TOKEN': token
             },
         });
-        const data = await asd.json()
+        const data = await getAllEntertainment.json()
         let tr = ''
         data.data.forEach(element => {
             tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, element.created_at)
@@ -296,7 +323,6 @@
             },
             body: formData
         })
-        console.log(postData)
         if (postData.status !== 201) {
             document.querySelector('#toast-title').classList.add('text-danger')
             document.querySelector('#toast-title').innerHTML = 'Failed Adding Data'
@@ -318,10 +344,8 @@
     document.querySelector('#form-entertainment').addEventListener('submit', async (e) => {
         e.preventDefault()
         const dataEntertainment = await submitEntertaintment()
-        console.log(dataEntertainment)
 
         const tr = trTable(dataEntertainment.data.id, dataEntertainment.data.nama, dataEntertainment.data.harga, dataEntertainment.data.kategori, dataEntertainment.data.peruntukan, dataEntertainment.data.created_at)
-        console.log(tr)
         table.row.add($(tr)).draw()
     })
 </script>

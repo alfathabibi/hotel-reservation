@@ -69,4 +69,11 @@ class Entertainment extends Controller
     {
         return response()->json(['isError' => false, 'messages' => 'Successfully get all data', 'data' => ModelsEntertainment::all()], 200);
     }
+
+    public function DeleteEntertainment(Request $request)
+    {
+        $entertaintment = ModelsEntertainment::find($request->post()['id']);
+        $entertaintment->delete();
+        return response()->json(['isError' => false, 'messages' => 'Successfully delete data', 'data' => $entertaintment], 200);
+    }
 }
