@@ -236,6 +236,9 @@
                 render: (data) => {
                     return formatDate(data)
                 }
+            }, {
+                targets: 5,
+                orderable: false
             }]
         })
     }
