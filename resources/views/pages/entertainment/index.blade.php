@@ -186,7 +186,8 @@
 
 <script>
     const token = document.querySelector('meta[name="csrf-token').getAttribute('content')
-    Dropzone.autoDiscover = false;
+    Dropzone.autoDiscover = false
+    let table
 
     let myDropzone = new Dropzone("#myId", {
         autoProcessQueue: false,
@@ -197,7 +198,21 @@
     });
 
     const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
-        return `<tr><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button"><i class="fas fa-trash-alt"></i></button></td></tr>`
+        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button"><i class="fas fa-trash-alt"></i></button></td></tr>`
+    }
+
+    const formatDate = (tanggal) => {
+        const zeroAdder = (item) => {
+            return item < 10 ? '0' + item : item
+        }
+        const date = new Date(tanggal)
+        const s = zeroAdder(date.getSeconds())
+        const m = zeroAdder(date.getMinutes())
+        const h = zeroAdder(date.getHours())
+        const dd = zeroAdder(date.getDate())
+        const mm = zeroAdder(date.getMonth() + 1)
+        const yy = date.getFullYear()
+        return `${dd}-${mm}-${yy} | ${h}:${m}:${s}`
     }
 
     const getAllData = async () => {
@@ -209,14 +224,20 @@
         const data = await asd.json()
         let tr = ''
         data.data.forEach(element => {
-            const date = new Date(element.created_at)
-            const dd = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
-            const mm = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-            const yy = date.getFullYear()
-            tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, `${dd}-${mm}-${yy}`)
+            tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, element.created_at)
         });
         document.querySelector('#tbody-entertaintment').innerHTML = tr
-        new DataTable('#table-entertainment', {})
+        table = new DataTable('#table-entertainment', {
+            order: [
+                [4, "desc"]
+            ],
+            columnDefs: [{
+                targets: 4,
+                render: (data) => {
+                    return formatDate(data)
+                }
+            }]
+        })
     }
     getAllData()
 
@@ -288,11 +309,17 @@
         showToast()
         clearForm()
         document.querySelector('#close-add-enterteinment-button').click()
+        return await postData.json()
     }
 
     document.querySelector('#form-entertainment').addEventListener('submit', async (e) => {
         e.preventDefault()
-        await submitEntertaintment()
+        const dataEntertainment = await submitEntertaintment()
+        console.log(dataEntertainment)
+
+        const tr = trTable(dataEntertainment.data.id, dataEntertainment.data.nama, dataEntertainment.data.harga, dataEntertainment.data.kategori, dataEntertainment.data.peruntukan, dataEntertainment.data.created_at)
+        console.log(tr)
+        table.row.add($(tr)).draw()
     })
 </script>
 

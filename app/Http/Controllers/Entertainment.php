@@ -62,7 +62,7 @@ class Entertainment extends Controller
             $fotoEntertainment->save();
         }
 
-        return response()->json(['id' => $entertaintment->id, 'isError' => false, 'messages' => 'Successfully adding data', 'data' => $request->all(), 'images' => $files], 201);
+        return response()->json(['isError' => false, 'messages' => 'Successfully adding data', 'data' => $entertaintment], 201);
     }
 
     public function ReadAllEntertainment()
