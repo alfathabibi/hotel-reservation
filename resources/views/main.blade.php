@@ -37,6 +37,7 @@
   <link id="pagestyle" href="/assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/css/dropzone.min.css" type="text/css" />
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/photoswipe@5.2.2/dist/photoswipe.css">
   <!-- JQuery -->
   <script src="/assets/js/jquery.js"></script>
   <script src="/assets/js/dropzone.min.js"></script>
