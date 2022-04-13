@@ -61,4 +61,5 @@ Route::get('customers', [CustomerController::class, 'index']);
 Route::get('entertainment', [Entertainment::class, 'index']);
 Route::post('entertainment/create', [Entertainment::class, 'CreateEntertainment']);
 Route::get('entertainment/read-all', [Entertainment::class, 'ReadAllEntertainment']);
+Route::get('entertainment/read', [Entertainment::class, 'ReadEntertainment']);
 Route::delete('entertainment/delete', [Entertainment::class, 'DeleteEntertainment']);

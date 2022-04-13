@@ -34,6 +34,14 @@
     .dropzone {
         border: 1px solid #d2d6da;
     }
+
+    #my-gallery a {
+        max-width: 33%;
+    }
+
+    #my-gallery img {
+        width: 100%;
+    }
 </style>
 
 <div class="row">
@@ -165,6 +173,51 @@
     </div>
 </div>
 
+<div class="modal fade" id="detailEntertainmentModal" role="dialog" aria-labelledby="detailEntertainmentModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Entertainment Detail</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="pswp-gallery d-flex flex-wrap justify-content-center" id="my-gallery"></div>
+                <div class="row mt-5">
+                    <div class="col-12 col-md-6">
+                        <p class="m-0"><strong>Name:</strong></p>
+                        <p id="detail-nama"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="m-0"><strong>Price:</strong></p>
+                        <p id="detail-harga"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="m-0"><strong>Category:</strong></p>
+                        <p id="detail-kategori"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="m-0"><strong>Allotment:</strong></p>
+                        <p id="detail-peruntukan"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="m-0"><strong>Created At:</strong></p>
+                        <p id="detail-created"></p>
+                    </div>
+                    <div class="col-12">
+                        <p class="m-0"><strong>Description:</strong></p>
+                        <p id="detail-deskripsi"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal" id="close-add-enterteinment-button">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
@@ -176,6 +229,9 @@
         </div>
     </div>
 </div>
+
+
+<script type="module" src="/assets/js/photoswipe.js"></script>
 
 <script>
     const token = document.querySelector('meta[name="csrf-token').getAttribute('content')
@@ -189,6 +245,20 @@
         maxFiles: 5,
         addRemoveLinks: true
     });
+
+    const formatDate = (tanggal) => {
+        const zeroAdder = (item) => {
+            return item < 10 ? '0' + item : item
+        }
+        const date = new Date(tanggal)
+        const s = zeroAdder(date.getSeconds())
+        const m = zeroAdder(date.getMinutes())
+        const h = zeroAdder(date.getHours())
+        const dd = zeroAdder(date.getDate())
+        const mm = zeroAdder(date.getMonth() + 1)
+        const yy = date.getFullYear()
+        return `${dd}-${mm}-${yy} | ${h}:${m}:${s}`
+    }
 
     const onClickDeleteModal = async () => {
         const id = document.querySelector('#delete-entertainment-input').value
@@ -224,22 +294,29 @@
         document.querySelector('#delete-entertainment-input').value = id
     }
 
-    const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
-        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteEntertainmentModal" onclick="onClickDelete(${id}, '${nama}')"><i class="fas fa-trash-alt"></i></button></td></tr>`
+    const onClickDetail = async (id) => {
+        let images = ''
+        const getEntertainment = await fetch(`/entertainment/read?id=${id}`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        });
+        const entertainment = await getEntertainment.json()
+        entertainment.data.images.forEach((element) => {
+            images += `<a href="${element.path}" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/></a>`
+        })
+        document.querySelector('#my-gallery').innerHTML = images
+        document.querySelector('#detail-nama').innerHTML = entertainment.data.nama
+        document.querySelector('#detail-harga').innerHTML = entertainment.data.harga
+        document.querySelector('#detail-kategori').innerHTML = entertainment.data.kategori
+        document.querySelector('#detail-peruntukan').innerHTML = entertainment.data.peruntukan
+        document.querySelector('#detail-created').innerHTML = formatDate(entertainment.data.created_at)
+        document.querySelector('#detail-deskripsi').innerHTML = entertainment.data.deskripsi
     }
 
-    const formatDate = (tanggal) => {
-        const zeroAdder = (item) => {
-            return item < 10 ? '0' + item : item
-        }
-        const date = new Date(tanggal)
-        const s = zeroAdder(date.getSeconds())
-        const m = zeroAdder(date.getMinutes())
-        const h = zeroAdder(date.getHours())
-        const dd = zeroAdder(date.getDate())
-        const mm = zeroAdder(date.getMonth() + 1)
-        const yy = date.getFullYear()
-        return `${dd}-${mm}-${yy} | ${h}:${m}:${s}`
+    const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
+        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#detailEntertainmentModal" onclick="onClickDetail('${id}')"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteEntertainmentModal" onclick="onClickDelete(${id}, '${nama}')"><i class="fas fa-trash-alt"></i></button></td></tr>`
     }
 
     const getAllData = async () => {

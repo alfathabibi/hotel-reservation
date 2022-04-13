@@ -49,8 +49,8 @@ class Entertainment extends Controller
         if ($request->file('fotos')) {
             foreach ($request->file('fotos') as $key => $file) {
                 $fileName = time() . rand(1, 99) . '.' . $file->extension();
-                $file->move(public_path('uploads/images'), $fileName);
-                $files[] = ['name' => $fileName, 'url' => 'uploads/images/' . $fileName];
+                $file->move(public_path('/uploads/images'), $fileName);
+                $files[] = ['name' => $fileName, 'url' => '/uploads/images/' . $fileName];
             }
         }
 
@@ -75,5 +75,13 @@ class Entertainment extends Controller
         $entertaintment = ModelsEntertainment::find($request->post()['id']);
         $entertaintment->delete();
         return response()->json(['isError' => false, 'messages' => 'Successfully delete data', 'data' => $entertaintment], 200);
+    }
+
+    public function ReadEntertainment(Request $request)
+    {
+        $entertaintment = ModelsEntertainment::find($request->query('id'));
+        $entertaintmentPhotos = ModelsEntertainment::find($request->query('id'))->photos;
+        $entertaintment['images'] = $entertaintmentPhotos;
+        return response()->json(['isError' => false, 'messages' => 'Successfully get data', 'data' => $entertaintment], 200);
     }
 }
