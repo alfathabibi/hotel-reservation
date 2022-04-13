@@ -63,9 +63,7 @@
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-
-                        </tbody>
+                        <tbody id="tbody-entertaintment"></tbody>
                     </table>
                 </div>
             </div>
@@ -188,7 +186,6 @@
 
 <script>
     const token = document.querySelector('meta[name="csrf-token').getAttribute('content')
-    let table = new DataTable('#table-entertainment', {});
     Dropzone.autoDiscover = false;
 
     let myDropzone = new Dropzone("#myId", {
@@ -198,6 +195,30 @@
         maxFiles: 5,
         addRemoveLinks: true
     });
+
+    const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
+        return `<tr><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button"><i class="fas fa-trash-alt"></i></button></td></tr>`
+    }
+
+    const getAllData = async () => {
+        const asd = await fetch('/entertainment/read-all', {
+            headers: {
+                'X-CSRF-TOKEN': token
+            },
+        });
+        const data = await asd.json()
+        let tr = ''
+        data.data.forEach(element => {
+            const date = new Date(element.created_at)
+            const dd = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+            const mm = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+            const yy = date.getFullYear()
+            tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, `${dd}-${mm}-${yy}`)
+        });
+        document.querySelector('#tbody-entertaintment').innerHTML = tr
+        new DataTable('#table-entertainment', {})
+    }
+    getAllData()
 
     const showToast = () => {
         var toastElList = [].slice.call(document.querySelectorAll('.toast'))
@@ -272,7 +293,6 @@
     document.querySelector('#form-entertainment').addEventListener('submit', async (e) => {
         e.preventDefault()
         await submitEntertaintment()
-
     })
 </script>
 

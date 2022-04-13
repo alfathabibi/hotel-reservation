@@ -64,4 +64,9 @@ class Entertainment extends Controller
 
         return response()->json(['id' => $entertaintment->id, 'isError' => false, 'messages' => 'Successfully adding data', 'data' => $request->all(), 'images' => $files], 201);
     }
+
+    public function ReadAllEntertainment()
+    {
+        return response()->json(['isError' => false, 'messages' => 'Successfully get all data', 'data' => ModelsEntertainment::all()], 200);
+    }
 }
