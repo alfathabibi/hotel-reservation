@@ -15,7 +15,7 @@ class CreateEntertainmentPhotosTable extends Migration
     {
         Schema::create('entertainment_photos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('entertainment_id')->constrained('entertainments');
+            $table->foreignId('entertainment_id')->constrained('entertainments')->onDelete('cascade');
             $table->string('nama');
             $table->string('path');
             $table->timestamps();
