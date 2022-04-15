@@ -84,4 +84,53 @@ class Entertainment extends Controller
         $entertaintment['images'] = $entertaintmentPhotos;
         return response()->json(['isError' => false, 'messages' => 'Successfully get data', 'data' => $entertaintment], 200);
     }
+
+    public function UpdateEntertainment(Request $request)
+    {
+        $validasi = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+                'nama' => 'required',
+                'harga' => 'required',
+                'kategori' => 'required',
+                'peruntukan' => 'required',
+                'deskripsi' => 'required',
+            ]
+        );
+        if ($validasi->fails()) {
+            return response()->json([
+                'isError' => true,
+                'messages' => $validasi->errors(),
+                'data' => $request->all()
+            ], 403);
+        }
+
+        $entertaintment = ModelsEntertainment::find($request->post()['id']);
+        $entertaintment->nama = $request->post()['nama'];
+        $entertaintment->harga = $request->post()['harga'];
+        $entertaintment->kategori = $request->post()['kategori'];
+        $entertaintment->peruntukan = $request->post()['peruntukan'];
+        $entertaintment->deskripsi = $request->post()['deskripsi'];
+        $entertaintment->save();
+
+        $files = [];
+        if ($request->file('fotos')) {
+            foreach ($request->file('fotos') as $key => $file) {
+                $fileName = time() . rand(1, 99) . '.' . $file->extension();
+                $file->move(public_path('/uploads/images'), $fileName);
+                $files[] = ['name' => $fileName, 'url' => '/uploads/images/' . $fileName];
+            }
+        }
+
+        foreach ($files as $key => $file) {
+            $fotoEntertainment = new ModelEntertainmentPhoto;
+            $fotoEntertainment->entertainment_id = $request->post()['id'];
+            $fotoEntertainment->nama = $file['name'];
+            $fotoEntertainment->path = $file['url'];
+            $fotoEntertainment->save();
+        }
+
+        return response()->json(['isError' => false, 'messages' => 'Successfully editing data', 'data' => $entertaintment], 200);
+    }
 }
