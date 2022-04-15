@@ -133,4 +133,11 @@ class Entertainment extends Controller
 
         return response()->json(['isError' => false, 'messages' => 'Successfully editing data', 'data' => $entertaintment], 200);
     }
+
+    public function DeleteImageEntertainment(Request $request)
+    {
+        $entertaintment = ModelEntertainmentPhoto::find($request->post()['id']);
+        $entertaintment->delete();
+        return response()->json(['isError' => false, 'messages' => 'Successfully delete data', 'data' => $entertaintment], 200);
+    }
 }

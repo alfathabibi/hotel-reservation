@@ -219,7 +219,7 @@
     </div>
 </div>
 
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1051">
     <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <strong class="me-auto text-success" id="toast-title">Successfully Adding Data</strong>
@@ -248,6 +248,12 @@
         maxFiles: 5,
         addRemoveLinks: true
     });
+
+    const dropzoneFormCondition = (imagesLength) => {
+        if (imagesLength >= 5) document.querySelector('#dropzoneForm').style.display = "none"
+        else document.querySelector('#dropzoneForm').style.display = "block"
+        myDropzone.options.maxFiles = 5 - imagesLength
+    }
 
     const clearForm = () => {
         const titel = document.querySelector('#title-add-modal-entertainment')
@@ -352,6 +358,32 @@
         event.preventDefault()
         event.stopPropagation()
         console.log(id)
+        const deleteImageEntertainment = await fetch('/entertainment/delete-image', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id
+            })
+        });
+        if (deleteImageEntertainment.status !== 200) {
+            document.querySelector('#toast-title').classList.add('text-danger')
+            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Image Data'
+            document.querySelector('#toast-body').innerHTML = 'The entertainment image data failed to be deleted!'
+            showToast()
+            return
+        }
+        table.rows(`.tr-${id}`).remove().draw();
+        document.querySelector('#toast-title').classList.remove('text-danger')
+        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Image Data'
+        document.querySelector('#toast-body').innerHTML = 'The entertainment image data has been successfully deleted!'
+        showToast()
+
+        document.querySelector(`#img-entertainment-${id}`).remove()
+        console.log(document.querySelectorAll('.img-entertainment').length)
+        dropzoneFormCondition(document.querySelectorAll('.img-entertainment').length)
     }
 
     const onClickEdit = async (id) => {
@@ -360,11 +392,9 @@
         let images = ''
         editId = id
         const entertainment = await (await fetchEntertainment(id)).json()
-        const imagesLength = entertainment.data.images.length
-        if (imagesLength >= 5) document.querySelector('#dropzoneForm').style.display = "none"
-        myDropzone.options.maxFiles = 5 - imagesLength
+        dropzoneFormCondition(entertainment.data.images.length)
         entertainment.data.images.forEach((element) => {
-            images += `<a href="${element.path}" class="position-relative" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/><button type="button" class="btn btn-icon bg-gradient-danger position-absolute top-0 end-0 me-2 mt-2 mb-0" onclick="removeImage(event, '${element.id}')"><i class="fas fa-trash-alt"></i></button></a>`
+            images += `<a href="${element.path}" id="img-entertainment-${element.id}" class="position-relative img-entertainment" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/><button type="button" class="btn btn-icon bg-gradient-danger position-absolute top-0 end-0 me-2 mt-2 mb-0" onclick="removeImage(event, '${element.id}')"><i class="fas fa-trash-alt"></i></button></a>`
         })
         console.log(entertainment)
         document.querySelector('#nama').value = entertainment.data.nama

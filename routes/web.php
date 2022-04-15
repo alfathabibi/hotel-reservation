@@ -63,4 +63,5 @@ Route::post('entertainment/create', [Entertainment::class, 'CreateEntertainment'
 Route::get('entertainment/read-all', [Entertainment::class, 'ReadAllEntertainment']);
 Route::get('entertainment/read', [Entertainment::class, 'ReadEntertainment']);
 Route::delete('entertainment/delete', [Entertainment::class, 'DeleteEntertainment']);
+Route::delete('entertainment/delete-image', [Entertainment::class, 'DeleteImageEntertainment']);
 Route::post('entertainment/update', [Entertainment::class, 'UpdateEntertainment']);
