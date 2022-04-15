@@ -59,9 +59,9 @@ Route::get('customers', [CustomerController::class, 'index']);
 
 // entertainment page
 Route::get('entertainment', [Entertainment::class, 'index']);
-Route::post('entertainment/create', [Entertainment::class, 'CreateEntertainment']);
-Route::get('entertainment/read-all', [Entertainment::class, 'ReadAllEntertainment']);
 Route::get('entertainment/read', [Entertainment::class, 'ReadEntertainment']);
+Route::get('entertainment/read-all', [Entertainment::class, 'ReadAllEntertainment']);
+Route::post('entertainment/create', [Entertainment::class, 'CreateEntertainment']);
+Route::post('entertainment/update', [Entertainment::class, 'UpdateEntertainment']);
 Route::delete('entertainment/delete', [Entertainment::class, 'DeleteEntertainment']);
 Route::delete('entertainment/delete-image', [Entertainment::class, 'DeleteImageEntertainment']);
-Route::post('entertainment/update', [Entertainment::class, 'UpdateEntertainment']);

@@ -17,6 +17,19 @@ class Entertainment extends Controller
         ]);
     }
 
+    public function ReadAllEntertainment()
+    {
+        return response()->json(['isError' => false, 'messages' => 'Successfully get all data', 'data' => ModelsEntertainment::all()], 200);
+    }
+
+    public function ReadEntertainment(Request $request)
+    {
+        $entertaintment = ModelsEntertainment::find($request->query('id'));
+        $entertaintmentPhotos = ModelsEntertainment::find($request->query('id'))->photos;
+        $entertaintment['images'] = $entertaintmentPhotos;
+        return response()->json(['isError' => false, 'messages' => 'Successfully get data', 'data' => $entertaintment], 200);
+    }
+
     public function CreateEntertainment(Request $request)
     {
         $validasi = Validator::make(
@@ -63,26 +76,6 @@ class Entertainment extends Controller
         }
 
         return response()->json(['isError' => false, 'messages' => 'Successfully adding data', 'data' => $entertaintment], 201);
-    }
-
-    public function ReadAllEntertainment()
-    {
-        return response()->json(['isError' => false, 'messages' => 'Successfully get all data', 'data' => ModelsEntertainment::all()], 200);
-    }
-
-    public function DeleteEntertainment(Request $request)
-    {
-        $entertaintment = ModelsEntertainment::find($request->post()['id']);
-        $entertaintment->delete();
-        return response()->json(['isError' => false, 'messages' => 'Successfully delete data', 'data' => $entertaintment], 200);
-    }
-
-    public function ReadEntertainment(Request $request)
-    {
-        $entertaintment = ModelsEntertainment::find($request->query('id'));
-        $entertaintmentPhotos = ModelsEntertainment::find($request->query('id'))->photos;
-        $entertaintment['images'] = $entertaintmentPhotos;
-        return response()->json(['isError' => false, 'messages' => 'Successfully get data', 'data' => $entertaintment], 200);
     }
 
     public function UpdateEntertainment(Request $request)
@@ -132,6 +125,13 @@ class Entertainment extends Controller
         }
 
         return response()->json(['isError' => false, 'messages' => 'Successfully editing data', 'data' => $entertaintment], 200);
+    }
+
+    public function DeleteEntertainment(Request $request)
+    {
+        $entertaintment = ModelsEntertainment::find($request->post()['id']);
+        $entertaintment->delete();
+        return response()->json(['isError' => false, 'messages' => 'Successfully delete data', 'data' => $entertaintment], 200);
     }
 
     public function DeleteImageEntertainment(Request $request)

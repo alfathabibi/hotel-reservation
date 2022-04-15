@@ -241,7 +241,8 @@
     let editId
     Dropzone.autoDiscover = false
 
-    let myDropzone = new Dropzone("#dropzoneForm", {
+    // utils
+    const myDropzone = new Dropzone("#dropzoneForm", {
         autoProcessQueue: false,
         url: "/file/post",
         acceptedFiles: "image/*",
@@ -281,6 +282,22 @@
         myDropzone.removeAllFiles(true)
     }
 
+    const checkChecked = (arr) => {
+        const data = [];
+        arr.forEach(element => {
+            if (element.checked) data.push(element.value)
+        });
+        return data.join()
+    }
+
+    const showToast = () => {
+        const toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        const toastList = toastElList.map(function(toastEl) {
+            return new bootstrap.Toast(toastEl)
+        })
+        toastList.forEach(toast => toast.show())
+    }
+
     const formatDate = (tanggal) => {
         const zeroAdder = (item) => {
             return item < 10 ? '0' + item : item
@@ -295,6 +312,11 @@
         return `${dd}-${mm}-${yy} | ${h}:${m}:${s}`
     }
 
+    const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
+        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#detailEntertainmentModal" onclick="onClickDetail('${id}')"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#addEntertainmentModal" onclick="onClickEdit('${id}')"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteEntertainmentModal" onclick="onClickDelete(${id}, '${nama}')"><i class="fas fa-trash-alt"></i></button></td></tr>`
+    }
+
+    // fetch entertainment by id function
     const fetchEntertainment = async (id) => {
         const getEntertainment = await fetch(`/entertainment/read?id=${id}`, {
             method: 'GET',
@@ -305,162 +327,11 @@
         return getEntertainment
     }
 
-    const onClickDeleteModal = async () => {
-        const id = document.querySelector('#delete-entertainment-input').value
-        const deleteEntertainment = await fetch('/entertainment/delete', {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id
-            })
-        });
-        if (deleteEntertainment.status !== 200) {
-            document.querySelector('#toast-title').classList.add('text-danger')
-            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Data'
-            document.querySelector('#toast-body').innerHTML = 'The entertainment data failed to be deleted!'
-            showToast()
-            document.querySelector('#close-delete-enterteinment-button').click()
-            return
-        }
-        table.rows(`.tr-${id}`).remove().draw();
-        document.querySelector('#toast-title').classList.remove('text-danger')
-        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Data'
-        document.querySelector('#toast-body').innerHTML = 'The entertainment data has been successfully deleted!'
-
-        showToast()
-        document.querySelector('#close-delete-enterteinment-button').click()
-    }
-
-    const onClickDelete = async (id, nama) => {
-        document.querySelector('#delete-entertainment-nama').innerHTML = nama
-        document.querySelector('#delete-entertainment-input').value = id
-    }
-
-    const onClickDetail = async (id) => {
-        let images = ''
-        const entertainment = await (await fetchEntertainment(id)).json()
-        entertainment.data.images.forEach((element) => {
-            images += `<a href="${element.path}" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/></a>`
-        })
-        document.querySelector('#list-image-detail').innerHTML = images
-        document.querySelector('#detail-nama').innerHTML = entertainment.data.nama
-        document.querySelector('#detail-harga').innerHTML = entertainment.data.harga
-        document.querySelector('#detail-kategori').innerHTML = entertainment.data.kategori
-        document.querySelector('#detail-peruntukan').innerHTML = entertainment.data.peruntukan
-        document.querySelector('#detail-created').innerHTML = formatDate(entertainment.data.created_at)
-        document.querySelector('#detail-deskripsi').innerHTML = entertainment.data.deskripsi
-    }
-
-    const removeImage = async (event, id) => {
-        event.preventDefault()
-        event.stopPropagation()
-        console.log(id)
-        const deleteImageEntertainment = await fetch('/entertainment/delete-image', {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id
-            })
-        });
-        if (deleteImageEntertainment.status !== 200) {
-            document.querySelector('#toast-title').classList.add('text-danger')
-            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Image Data'
-            document.querySelector('#toast-body').innerHTML = 'The entertainment image data failed to be deleted!'
-            showToast()
-            return
-        }
-        table.rows(`.tr-${id}`).remove().draw();
-        document.querySelector('#toast-title').classList.remove('text-danger')
-        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Image Data'
-        document.querySelector('#toast-body').innerHTML = 'The entertainment image data has been successfully deleted!'
-        showToast()
-
-        document.querySelector(`#img-entertainment-${id}`).remove()
-        console.log(document.querySelectorAll('.img-entertainment').length)
-        dropzoneFormCondition(document.querySelectorAll('.img-entertainment').length)
-    }
-
-    const onClickEdit = async (id) => {
-        isEdit = true
-        clearForm()
-        let images = ''
-        editId = id
-        const entertainment = await (await fetchEntertainment(id)).json()
-        dropzoneFormCondition(entertainment.data.images.length)
-        entertainment.data.images.forEach((element) => {
-            images += `<a href="${element.path}" id="img-entertainment-${element.id}" class="position-relative img-entertainment" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/><button type="button" class="btn btn-icon bg-gradient-danger position-absolute top-0 end-0 me-2 mt-2 mb-0" onclick="removeImage(event, '${element.id}')"><i class="fas fa-trash-alt"></i></button></a>`
-        })
-        console.log(entertainment)
-        document.querySelector('#nama').value = entertainment.data.nama
-        document.querySelector('#harga').value = entertainment.data.harga
-        document.querySelector('#deskripsi').value = entertainment.data.deskripsi
-        document.querySelectorAll('[name="kategori"]').forEach(element => {
-            if (element.value === entertainment.data.kategori) element.checked = true
-        })
-        document.querySelectorAll('[name="peruntukan"]').forEach(element => {
-            if (element.value === entertainment.data.peruntukan) element.checked = true
-        })
-        document.querySelector('#list-image-edit').innerHTML = images
-    }
-
+    // add stuff
     const onClickAdd = () => {
         isEdit = false
         clearForm()
-    }
-
-    const trTable = (id, nama, harga, kategori, peruntukan, tanggal) => {
-        return `<tr class="tr-${id}"><td>${nama}</td><td>${harga}</td><td>${kategori}</td><td>${peruntukan}</td><td>${tanggal}</td><td class="d-flex justify-content-center align-items-center"><button class="btn btn-icon btn-2 btn-secondary mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#detailEntertainmentModal" onclick="onClickDetail('${id}')"><i class="fas fa-search"></i></button><button class="btn btn-icon btn-2 btn-warning mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#addEntertainmentModal" onclick="onClickEdit('${id}')"><i class="fas fa-edit"></i></button><button class="btn btn-icon btn-2 btn-danger mx-1 mb-0" type="button" data-bs-toggle="modal" data-bs-target="#deleteEntertainmentModal" onclick="onClickDelete(${id}, '${nama}')"><i class="fas fa-trash-alt"></i></button></td></tr>`
-    }
-
-    const getAllData = async () => {
-        const getAllEntertainment = await fetch('/entertainment/read-all', {
-            headers: {
-                'X-CSRF-TOKEN': token
-            },
-        });
-        const data = await getAllEntertainment.json()
-        let tr = ''
-        data.data.forEach(element => {
-            tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, element.created_at)
-        });
-        document.querySelector('#tbody-entertaintment').innerHTML = tr
-        table = new DataTable('#table-entertainment', {
-            order: [
-                [4, "desc"]
-            ],
-            columnDefs: [{
-                targets: 4,
-                render: (data) => {
-                    return formatDate(data)
-                }
-            }, {
-                targets: 5,
-                orderable: false
-            }]
-        })
-    }
-    getAllData()
-
-    const showToast = () => {
-        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-        var toastList = toastElList.map(function(toastEl) {
-            return new bootstrap.Toast(toastEl)
-        })
-        toastList.forEach(toast => toast.show())
-    }
-
-    const checkChecked = (arr) => {
-        let data = [];
-        arr.forEach(element => {
-            if (element.checked) data.push(element.value)
-        });
-        return data.join()
+        dropzoneFormCondition(0)
     }
 
     const submitEntertaintment = async () => {
@@ -508,6 +379,29 @@
         clearForm()
         document.querySelector('#close-add-enterteinment-button').click()
         return await postData.json()
+    }
+
+    // edit stuff
+    const onClickEdit = async (id) => {
+        isEdit = true
+        clearForm()
+        let images = ''
+        editId = id
+        const entertainment = await (await fetchEntertainment(id)).json()
+        dropzoneFormCondition(entertainment.data.images.length)
+        entertainment.data.images.forEach((element) => {
+            images += `<a href="${element.path}" id="img-entertainment-${element.id}" class="position-relative img-entertainment" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/><button type="button" class="btn btn-icon bg-gradient-danger position-absolute top-0 end-0 me-2 mt-2 mb-0" onclick="removeImage(event, '${element.id}')"><i class="fas fa-trash-alt"></i></button></a>`
+        })
+        document.querySelector('#nama').value = entertainment.data.nama
+        document.querySelector('#harga').value = entertainment.data.harga
+        document.querySelector('#deskripsi').value = entertainment.data.deskripsi
+        document.querySelectorAll('[name="kategori"]').forEach(element => {
+            if (element.value === entertainment.data.kategori) element.checked = true
+        })
+        document.querySelectorAll('[name="peruntukan"]').forEach(element => {
+            if (element.value === entertainment.data.peruntukan) element.checked = true
+        })
+        document.querySelector('#list-image-edit').innerHTML = images
     }
 
     const submitEditEntertainment = async () => {
@@ -558,6 +452,88 @@
         return await postData.json()
     }
 
+    // detail
+    const onClickDetail = async (id) => {
+        let images = ''
+        const entertainment = await (await fetchEntertainment(id)).json()
+        entertainment.data.images.forEach((element) => {
+            images += `<a href="${element.path}" data-pswp-width="4110" data-pswp-height="2800" data-cropped="true" target="_blank"><img src="${element.path}" alt="${element.nama}"/></a>`
+        })
+        document.querySelector('#list-image-detail').innerHTML = images
+        document.querySelector('#detail-nama').innerHTML = entertainment.data.nama
+        document.querySelector('#detail-harga').innerHTML = entertainment.data.harga
+        document.querySelector('#detail-kategori').innerHTML = entertainment.data.kategori
+        document.querySelector('#detail-peruntukan').innerHTML = entertainment.data.peruntukan
+        document.querySelector('#detail-created').innerHTML = formatDate(entertainment.data.created_at)
+        document.querySelector('#detail-deskripsi').innerHTML = entertainment.data.deskripsi
+    }
+
+    // delete stuff
+    const onClickDeleteModal = async () => {
+        const id = document.querySelector('#delete-entertainment-input').value
+        const deleteEntertainment = await fetch('/entertainment/delete', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id
+            })
+        });
+        if (deleteEntertainment.status !== 200) {
+            document.querySelector('#toast-title').classList.add('text-danger')
+            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Data'
+            document.querySelector('#toast-body').innerHTML = 'The entertainment data failed to be deleted!'
+            showToast()
+            document.querySelector('#close-delete-enterteinment-button').click()
+            return
+        }
+        table.rows(`.tr-${id}`).remove().draw();
+        document.querySelector('#toast-title').classList.remove('text-danger')
+        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Data'
+        document.querySelector('#toast-body').innerHTML = 'The entertainment data has been successfully deleted!'
+
+        showToast()
+        document.querySelector('#close-delete-enterteinment-button').click()
+    }
+
+    const onClickDelete = async (id, nama) => {
+        document.querySelector('#delete-entertainment-nama').innerHTML = nama
+        document.querySelector('#delete-entertainment-input').value = id
+    }
+
+    const removeImage = async (event, id) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const deleteImageEntertainment = await fetch('/entertainment/delete-image', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id
+            })
+        });
+        if (deleteImageEntertainment.status !== 200) {
+            document.querySelector('#toast-title').classList.add('text-danger')
+            document.querySelector('#toast-title').innerHTML = 'Failed Deleting Image Data'
+            document.querySelector('#toast-body').innerHTML = 'The entertainment image data failed to be deleted!'
+            showToast()
+            return
+        }
+        table.rows(`.tr-${id}`).remove().draw();
+        document.querySelector('#toast-title').classList.remove('text-danger')
+        document.querySelector('#toast-title').innerHTML = 'Successfully Deleting Image Data'
+        document.querySelector('#toast-body').innerHTML = 'The entertainment image data has been successfully deleted!'
+        showToast()
+
+        document.querySelector(`#img-entertainment-${id}`).remove()
+        dropzoneFormCondition(document.querySelectorAll('.img-entertainment').length)
+    }
+
+    // event listener submit form
     document.querySelector('#form-entertainment').addEventListener('submit', async (e) => {
         e.preventDefault()
         if (isEdit) {
@@ -571,6 +547,36 @@
             table.row.add($(tr)).draw()
         }
     })
+
+    // fetch all data
+    const getAllData = async () => {
+        const getAllEntertainment = await fetch('/entertainment/read-all', {
+            headers: {
+                'X-CSRF-TOKEN': token
+            },
+        });
+        const data = await getAllEntertainment.json()
+        let tr = ''
+        data.data.forEach(element => {
+            tr += trTable(element.id, element.nama, element.harga, element.kategori, element.peruntukan, element.created_at)
+        });
+        document.querySelector('#tbody-entertaintment').innerHTML = tr
+        table = new DataTable('#table-entertainment', {
+            order: [
+                [4, "desc"]
+            ],
+            columnDefs: [{
+                targets: 4,
+                render: (data) => {
+                    return formatDate(data)
+                }
+            }, {
+                targets: 5,
+                orderable: false
+            }]
+        })
+    }
+    getAllData()
 </script>
 
 @endsection
