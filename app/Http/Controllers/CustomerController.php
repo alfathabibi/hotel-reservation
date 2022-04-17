@@ -39,4 +39,21 @@ class CustomerController extends Controller
         $customer->save();   
         return redirect('customers');
     }
+
+    public function ActivateCustomer(Request $request)
+    {
+        $customer = Customer::find($request->query('id'));
+        $customer->isActive = true;
+        $customer->save();   
+        return redirect('customers');
+    }
+
+    public function DeactivateCustomer(Request $request)
+    {
+        $customer = Customer::find($request->query('id'));
+        $customer->isActive = false;
+        $customer->save();   
+        return redirect('customers');
+    }
+
 }

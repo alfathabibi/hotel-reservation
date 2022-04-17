@@ -101,22 +101,28 @@
                                     </a>
                                 </td>
                                 <td class="align-middle text-center">
-                                    <a
-                                        href="javascript:;"
+                                    <?php
+                                    if($customer->isActive == 0){
+                                        echo '<a
+                                        href="customers/activate-customer?id='.$customer->id.'"
                                         class="btn btn-success"
                                         data-toggle="tooltip"
                                         data-original-title="active-customer"
                                     >
                                         Active
-                                    </a>
-                                    <a
-                                        href="javascript:;"
+                                    </a>';
+                                    }else{
+                                        echo '<a
+                                        href="customers/deactivate-customer?id='.$customer->id.'"
                                         class="btn btn-danger"
                                         data-toggle="tooltip"
                                         data-original-title="non-active-customer"
                                     >
                                         Non-active
-                                    </a>
+                                    </a>';
+                                    }
+
+                                    ?>
                                 </td>
                             </tr>
                             @endforeach

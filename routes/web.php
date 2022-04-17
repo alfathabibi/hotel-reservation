@@ -58,6 +58,8 @@ Route::post('register', [RegisterController::class, 'store']);
 Route::get('customers', [CustomerController::class, 'index']);
 Route::post('customers/add-customer', [CustomerController::class, 'AddCustomer']);
 Route::post('customers/edit-customer', [CustomerController::class, 'EditCustomer']);
+Route::get('customers/activate-customer', [CustomerController::class, 'ActivateCustomer']);
+Route::get('customers/deactivate-customer', [CustomerController::class, 'DeactivateCustomer']);
 
 // entertainment page
 Route::get('entertainment', [Entertainment::class, 'index']);
