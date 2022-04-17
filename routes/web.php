@@ -56,6 +56,8 @@ Route::post('register', [RegisterController::class, 'store']);
 
 //customers
 Route::get('customers', [CustomerController::class, 'index']);
+Route::post('customers/add-customer', [CustomerController::class, 'AddCustomer']);
+Route::post('customers/edit-customer', [CustomerController::class, 'EditCustomer']);
 
 // entertainment page
 Route::get('entertainment', [Entertainment::class, 'index']);
