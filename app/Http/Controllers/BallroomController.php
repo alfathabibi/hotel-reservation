@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ballroom;
+use App\Models\BallroomPhotos;
 use Illuminate\Http\Request;
 
 class BallroomController extends Controller
@@ -61,4 +62,43 @@ class BallroomController extends Controller
         return redirect('/ballrooms/create');
     }
 
+    public function update(Request $request, $name){
+
+        $validatedData = $request->validate([
+            'name' => 'required|unique:ballrooms',
+            'price' => 'required',
+            'capacity' => 'required',
+            'area' => 'required|max:2',
+            'facility' => 'required',
+            'floor' => 'required|max:3'
+        ]);
+
+        if($request->file('photo1')){
+            $photo1 = $request->file('photo1')->store('ballroom-photos');
+            BallroomPhotos::find($request['idPhoto1'])->update([
+                "text" => $photo1
+            ]);
+        }
+
+        $updatedRoom = Ballroom::where('name', $name)
+            ->update($validatedData);
+
+        $request->session()->flash('success', 'Add Ballroom Successfull!');
+
+        return redirect('/ballrooms/update/'.$validatedData['name']);
+    }
+
+    public function delete(Request $request){
+        $validatedData = $request->validate([
+            'name' => 'required'
+        ]);
+
+        $ballroom = Ballroom::where('name', $validatedData['name'])->firstOrFail();
+        BallroomPhotos::where('ballroom_id', $ballroom->id)->delete();
+        $ballroom->delete();
+        
+        $request->session()->flash('success', 'Delete Ballroom Successfully');
+        
+        return redirect('/ballrooms');
+    }
 }

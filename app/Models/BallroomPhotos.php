@@ -12,7 +12,7 @@ class BallroomPhotos extends Model
 
     protected $guarded = ['id'];
 
-    public function room(){
+    public function ballroom(){
         return $this->belongsTo(Ballroom::class);
     }
 }

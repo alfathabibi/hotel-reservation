@@ -48,6 +48,9 @@
                       </div>
                     </div>
                   </td>
+                  <td class="align-middle text-center">
+                    <span class="text-secondary text-xs font-weight-bold">{{$ballroom->price}}</span>
+                  </td>
                   <td class="align-middle text-center text-sm">
                     <span class="badge badge-sm bg-gradient-info">{{$ballroom->capacity}}</span>
                   </td>
@@ -58,13 +61,16 @@
                     <span class="text-secondary text-xs font-weight-bold">{{$ballroom->floor}}</span>
                   </td>
                   <td class="align-middle text-center">
-                    <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                      Edit 
-                    </a>
-                    <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                      Details
-                    </a>
-                    
+                  <a href="#">
+                          <button class="dropdown-item border-radius-md" href="javascript:;">
+                            <i class="fas fa-edit text-warning"></i>
+                            <span class="d-inline">Edit</span>
+                          </button>
+                        </a>
+                  <button class="dropdown-item border-radius-md" data-id="{{$ballroom->name}}" onclick="deleteBallroom(this)" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteBallroom">
+                      <i class="fas fa-trash text-danger"></i>
+                      <span class="d-inline">Delete</span>
+                  </button>
                   </td>
                 </tr>
                 @endforeach
@@ -75,5 +81,72 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="col text-center">
+                <i class="fas fa-check-circle text-success fs-1"></i>
+                <h4>Success</h4>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col text-center">
+                <p>Room Deleted Successfully</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/ballrooms/delete" method="post">
+            @csrf
+          <div class="container">
+            <div class="row justify-content-center">
+              <div class="col text-center">
+                <i class="fas fa-times-circle text-danger fs-1"></i>
+                <h4>Are You Sure?</h4>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col text-center">
+                <p>Do you really want to delete ballroom?</p>
+                <input type="hidden" name="name" id="ballroomDeleteId" value="">
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col text-center">
+                <button type="submit" class="btn btn-danger">Yes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
+          </form>
+        </div>  
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function deleteBallroom(event){
+      var ballroomName = event.dataset.id
+      console.log(ballroomName)
+      var ballroomDeleteId = document.getElementById('ballroomDeleteId')
+
+      ballroomDeleteId.value = ballroomName
+    }
+  </script>
   
 @endsection
