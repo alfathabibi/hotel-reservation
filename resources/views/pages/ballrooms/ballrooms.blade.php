@@ -31,6 +31,7 @@
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Capity</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Area</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Floor</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Facility</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                   <th class="text-secondary opacity-7"></th>
                 </tr>
@@ -55,10 +56,13 @@
                     <span class="badge badge-sm bg-gradient-info">{{$ballroom->capacity}}</span>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="badge badge-sm bg-gradient-success">{{$ballroom->area}}</span>
+                    <span class="text-secondary text-xs font-weight-bold">{{$ballroom->area}}</span>
                   </td>
                   <td class="align-middle text-center">
                     <span class="text-secondary text-xs font-weight-bold">{{$ballroom->floor}}</span>
+                  </td>
+                  <td class="align-middle text-center text-sm">
+                    <span class="badge badge-sm bg-gradient-success">{{$ballroom->facility}}</span>
                   </td>
                   <td class="align-middle text-center">
                   <a href="ballrooms/update/{{$ballroom->name}}">
