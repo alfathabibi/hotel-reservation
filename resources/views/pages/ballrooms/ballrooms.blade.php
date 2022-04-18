@@ -1,11 +1,25 @@
 @extends('main')
 
 @section('content')
+@if (session()->has('success'))
+  <script>
+      $(document).ready(function(){
+          $("#successModal").modal('toggle');
+      });
+  </script>
+@endif
 <div class="row">
     <div class="col-12">
       <div class="card mb-4">
-        <div class="card-header pb-0">
-          <h6>List Ballrooms</h6>
+      <div class="card-header px-3">
+          <div class="row">
+            <div class="col-6 d-flex align-items-center">
+              <h4 class="mb-0">List Ballrooms</h4>
+            </div>
+            <div class="col-6 text-end">
+              <a class="btn bg-gradient-dark mb-0" href="/ballrooms/create"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add New Ballroom</a>
+            </div>
+          </div>
         </div>
         <div class="card-body px-0 pt-0 pb-2">
           <div class="table-responsive p-0">

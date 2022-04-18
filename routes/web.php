@@ -43,7 +43,10 @@ Route::post('/rooms/update/{room_number}', [RoomController::class, 'update'])->m
 Route::post('/rooms/delete', [RoomController::class, 'delete'])->middleware('auth');
 
 // ballroom
-Route::get('ballrooms', [BallroomController::class, 'index']);
+// Route::get('ballrooms', [BallroomController::class, 'index']);
+Route::get('ballrooms', [BallroomController::class, 'index'])->middleware('auth');
+Route::get('/ballrooms/create', [BallroomController::class, 'create'])->middleware('auth');
+Route::post('/ballrooms/create', [BallroomController::class, 'store'])->middleware('auth');
 
 //login page
 Route::get('login', [LoginController::class, 'index'])->name('login')->middleware('guest');
