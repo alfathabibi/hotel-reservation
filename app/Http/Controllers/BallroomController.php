@@ -59,13 +59,13 @@ class BallroomController extends Controller
 
         $request->session()->flash('success', 'Add Room Successfull!');
 
-        return redirect('/ballrooms/create');
+        return redirect('/ballrooms');
     }
 
     public function update(Request $request, $name){
 
         $validatedData = $request->validate([
-            'name' => 'required|unique:ballrooms',
+            'name' => 'required',
             'price' => 'required',
             'capacity' => 'required',
             'area' => 'required|max:2',
@@ -85,9 +85,19 @@ class BallroomController extends Controller
 
         $request->session()->flash('success', 'Add Ballroom Successfull!');
 
-        return redirect('/ballrooms/update/'.$validatedData['name']);
+        return redirect('/ballrooms');
     }
 
+    public function edit($name){
+        $ballroom = Ballroom::where('name', $name)->with('photos')->firstOrFail();
+        
+        return view('pages/ballrooms/updateballroom',[
+            "title" => "Update Ballroom",
+            'active' => 'ballrooms',
+            'ballroom' => $ballroom
+        ]);
+    }
+    
     public function delete(Request $request){
         $validatedData = $request->validate([
             'name' => 'required'

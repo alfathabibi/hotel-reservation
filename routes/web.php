@@ -47,6 +47,8 @@ Route::get('ballrooms', [BallroomController::class, 'index'])->middleware('auth'
 Route::get('/ballrooms/create', [BallroomController::class, 'create'])->middleware('auth');
 Route::post('/ballrooms/create', [BallroomController::class, 'store'])->middleware('auth');
 Route::post('/ballrooms/delete', [BallroomController::class, 'delete'])->middleware('auth');
+Route::get('/ballrooms/update/{name}', [BallroomController::class, 'edit'])->middleware('auth');
+Route::post('/ballrooms/update/{name}', [BallroomController::class, 'update'])->middleware('auth');
 
 //login page
 Route::get('login', [LoginController::class, 'index'])->name('login')->middleware('guest');

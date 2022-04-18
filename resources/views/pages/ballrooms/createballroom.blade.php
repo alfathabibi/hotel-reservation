@@ -71,9 +71,7 @@
                     </div>
                     @enderror
                   </div>
-                  <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-primary w-100 mt-4 mb-0">Add</button>
-                  </div>
+                  
               </div>
               <div class="col-6">
                 <label>Facility</label>
@@ -101,6 +99,9 @@
                     <input class="form-control" type="file" name="photo3" id="formFile" accept="image/png, image/jpg, image/jpeg" required>
                   </div>
               </div>
+              <div class="text-center">
+                    <button type="submit" class="btn bg-gradient-primary w-30 mt-4 mb-0">Add</button>
+                  </div>
               </form>
             </div>
           </div>

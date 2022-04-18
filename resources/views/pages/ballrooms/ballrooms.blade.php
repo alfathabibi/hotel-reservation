@@ -61,7 +61,7 @@
                     <span class="text-secondary text-xs font-weight-bold">{{$ballroom->floor}}</span>
                   </td>
                   <td class="align-middle text-center">
-                  <a href="#">
+                  <a href="ballrooms/update/{{$ballroom->name}}">
                           <button class="dropdown-item border-radius-md" href="javascript:;">
                             <i class="fas fa-edit text-warning"></i>
                             <span class="d-inline">Edit</span>
