@@ -15,9 +15,12 @@ use App\Http\Controllers\RoomController;
 |
 */
 
+Route::post('/auth/register', [App\Http\Controllers\AuthController::class, 'register']);
+Route::post('/auth/login', [App\Http\Controllers\AuthController::class, 'login']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/room/transaction', [RoomController::class , 'createTransaction']);
-Route::get('/room', [RoomController::class , 'getListRooms']);
+Route::post('/room/transaction', [RoomController::class, 'createTransaction']);
+Route::get('/room', [RoomController::class, 'getListRooms']);
