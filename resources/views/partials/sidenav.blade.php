@@ -54,6 +54,14 @@
             <span class="nav-link-text ms-1">Entertainment</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link @if($active == 'customers') active @endif" href="/customers">
+            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fas fa-user @if($active == 'customers') text-white @else text-dark @endif"></i>
+            </div>
+            <span class="nav-link-text ms-1">Customer</span>
+          </a>
+        </li>
       </ul>
     </div>
   </aside>

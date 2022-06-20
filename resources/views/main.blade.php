@@ -19,6 +19,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="/assets/img/favicon.png">
   <title>
@@ -34,23 +35,28 @@
   <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="/assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/dropzone.min.css" type="text/css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/photoswipe@5.2.2/dist/photoswipe.css">
   <!-- JQuery -->
   <script src="/assets/js/jquery.js"></script>
+  <script src="/assets/js/dropzone.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-  
-    @include('partials/sidenav')
+
+  @include('partials/sidenav')
 
   <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
     <!-- Navbar -->
     @include('partials.navbar')
     <!-- End Navbar -->
     <div class="container-fluid py-4">
-        
-        @yield('content')
-      
-        @include('partials.footer')
+
+      @yield('content')
+
+      @include('partials.footer')
     </div>
   </main>
   <!--   Core JS Files   -->

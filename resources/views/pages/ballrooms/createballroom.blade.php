@@ -14,7 +14,7 @@
           <div class="card-header pb-0 p-3">
             <div class="row">
               <div class="col-6 d-flex align-items-center">
-                <h4 class="mb-0">Add Rooms</h6>
+                <h4 class="mb-0">Add Ballrooms</h6>
               </div>
             </div>
           </div>
@@ -23,10 +23,10 @@
               <div class="col-6">
                 <form role="form" action="create" method="post" enctype="multipart/form-data">
                   @csrf
-                  <label>Room Number</label>
+                  <label>Ballroom Name</label>
                   <div class="mb-3">
-                    <input type="text" name="room_number" class="form-control @error('room_number') is-invalid @enderror" value="{{old('room_number')}}" placeholder="101" aria-label="room_number" aria-describedby="email-addon" required>   
-                    @error('room_number')
+                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{old('name')}}" placeholder="Ballroom Alpha" aria-label="name" aria-describedby="email-addon" required>   
+                    @error('name')
                     <div class="invalid-feedback">
                       {{$message}}
                     </div>
@@ -41,22 +41,22 @@
                     </div>
                     @enderror
                   </div>
-                  <label>Type</label>
+                  <label>Capacity</label>
                   <div class="mb-3">
-                    <select class="form-select" name="type">
-                      <option value="2 Single">2 Single</option>
-                      <option value="1 Queen">1 Queen</option>
+                    <select class="form-select" name="capacity">
+                      <option value="500">500 guests</option>
+                      <option value="1000">1000 guest</option>
                     </select>
-                    @error('type')
+                    @error('capacity')
                     <div class="invalid-feedback">
                       {{$message}}
                     </div>
                     @enderror
                   </div>
-                  <label>Room Area</label>
+                  <label>Ballroom Area</label>
                   <div class="mb-3">
-                    <input type="text" name="room_area" class="form-control @error('room_area') is-invalid @enderror" value="{{old('room_area')}}" placeholder="15" aria-label="room_area" aria-describedby="email-addon" required>   
-                    @error('room_area')
+                    <input type="text" name="area" class="form-control @error('area') is-invalid @enderror" value="{{old('area')}}" placeholder="15" aria-label="area" aria-describedby="email-addon" required>   
+                    @error('area')
                     <div class="invalid-feedback">
                       {{$message}}
                     </div>
@@ -71,11 +71,21 @@
                     </div>
                     @enderror
                   </div>
-                  <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-primary w-100 mt-4 mb-0">Add</button>
-                  </div>
+                  
               </div>
               <div class="col-6">
+                <label>Facility</label>
+                    <div class="mb-3">
+                        <select class="form-select" name="facility">
+                        <option value="yes">With Equipment</option>
+                        <option value="no">Without Equipment</option>
+                        </select>
+                        @error('facility')
+                        <div class="invalid-feedback">
+                        {{$message}}
+                        </div>
+                        @enderror
+                    </div>  
                   <div class="mb-3">
                     <label for="formFile" class="form-label">Upload Photo 1</label>
                     <input class="form-control" type="file" name="photo1" id="formFile" accept="image/png, image/jpg, image/jpeg" required>
@@ -89,6 +99,9 @@
                     <input class="form-control" type="file" name="photo3" id="formFile" accept="image/png, image/jpg, image/jpeg" required>
                   </div>
               </div>
+              <div class="text-center">
+                    <button type="submit" class="btn bg-gradient-primary w-30 mt-4 mb-0">Add</button>
+                  </div>
               </form>
             </div>
           </div>
@@ -110,7 +123,7 @@
             </div>
             <div class="row justify-content-center">
               <div class="col text-center">
-                <p>Add Room Successfully</p>
+                <p>Add Ballroom Successfully</p>
               </div>
             </div>
         </div>
