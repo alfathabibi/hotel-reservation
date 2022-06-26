@@ -19,12 +19,12 @@ use App\Http\Controllers\CustomerController;
 |
 */
 
-Route::get('/', function () {
-    return view('dashboard', [
-        'title' => 'Dashborad',
-        'active' => 'dashboard'
-    ]);
-})->middleware('auth');
+// Route::get('/', function () {
+//     return view('dashboard', [
+//         'title' => 'Dashborad',
+//         'active' => 'dashboard'
+//     ]);
+// })->middleware('auth');
 
 Route::get('dashboard', function () {
     return view('dashboard', [
@@ -41,6 +41,8 @@ Route::post('/rooms/create', [RoomController::class, 'store'])->middleware('auth
 Route::get('/rooms/update/{room_number}', [RoomController::class, 'edit'])->middleware('auth');
 Route::post('/rooms/update/{room_number}', [RoomController::class, 'update'])->middleware('auth');
 Route::post('/rooms/delete', [RoomController::class, 'delete'])->middleware('auth');
+Route::get('/rooms/transactions', [RoomController::class, 'transaction'])->middleware('auth');
+Route::post('/rooms/transactions/update', [RoomController::class, 'updateTransaction'])->middleware('auth');
 
 // ballroom
 Route::get('ballrooms', [BallroomController::class, 'index'])->middleware('auth');

@@ -38,6 +38,20 @@ class RoomController extends Controller
         ]);
     }
 
+    public function transaction(){
+
+        $transactions = RoomTransaction::with('room')
+            ->orderBy('payment_status')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pages/rooms/transactionroom',[
+            "title" => "Room Transactions",
+            'active' => 'rooms',
+            "transactions" => $transactions
+        ]);
+    }
+
     public function store(Request $request){
 
         $validatedData = $request->validate([
@@ -127,7 +141,7 @@ class RoomController extends Controller
     }
 
     public function createTransaction(Request $request){
-
+        
         $validatedData = Validator::make(
             $request->all(),
             [
@@ -144,6 +158,21 @@ class RoomController extends Controller
                 'messages' => $validatedData->errors()
             ], 400);
         };
+
+        $room = Room::where('id', $request['room_id'])->firstOrFail();
+
+        if(!$room){
+            return response()->json([
+                'status' => false,
+                'messages' => 'Room tidak ditemukan'
+            ], 400);
+        }
+
+        $fromDate = strtotime($request['fromDate']);
+        $toDate = strtotime($request['toDate']);
+        $datediff = round(($toDate - $fromDate) / (60 * 60 * 24));
+        
+        $request['price'] = $room->price * $datediff;
 
         $room_transaction = RoomTransaction::create($request->all());
 
@@ -181,20 +210,63 @@ class RoomController extends Controller
 
         $data = Room::whereNotIn('id', 
             RoomTransaction::select('room_id')
-                ->orWhere(function($query) use($from, $to){
-                    $query->whereBetween('fromDate', [$from, $to]);
-                })
-                ->orWhere(function($query) use($from, $to){
-                    $query->whereBetween('toDate', [$from, $to]);
-                })
-                ->orWhere(function($query) use($from, $to){
-                    $query->whereRaw($from . ' between fromDate and toDate');
-                })
-                ->orWhere(function($query) use($from, $to){
-                    $query->whereRaw($to . ' between fromDate and toDate');
+                ->where('status', '=', 'active')
+                ->where(function($query) use($from, $to){
+                    $query->orWhere(function($query) use($from, $to){
+                        $query->whereBetween('fromDate', [$from, $to]);
+                    })
+                    ->orWhere(function($query) use($from, $to){
+                        $query->whereBetween('toDate', [$from, $to]);
+                    })
+                    ->orWhere(function($query) use($from, $to){
+                        $query->whereRaw($from . ' between fromDate and toDate');
+                    })
+                    ->orWhere(function($query) use($from, $to){
+                        $query->whereRaw($to . ' between fromDate and toDate');
+                    });  
                 })
         )->with('photos')->get();
 
         return response()->json($data);
+    }
+
+    public function getAllTransaction(Request $request){
+        $validateData = Validator::make(
+            $request->query(),
+            [
+                'userId' => 'required',
+            ]
+        );
+
+        if($validateData->fails()){
+            return response()->json([
+                'status' => false,
+                'messages' => $validateData->errors()
+            ], 400);
+        };
+
+        $data = RoomTransaction::where('customer_id', '=' ,$request->query('userId'))
+        ->orderBy('created_at', 'desc')
+        ->with('room')->get();
+        return response()->json($data);
+    }
+
+    public function updateTransaction(Request $request){
+
+        $validatedData = $request->validate([
+            'id'=> 'required'
+        ]);
+
+        $data = [
+            "status" => $request['status'],
+            "payment_status" => $request['payment_status'] === 'true' ? true : false
+        ];
+
+        $updatedTr = RoomTransaction::where('id', $validatedData['id'])
+            ->update($data);
+
+        $request->session()->flash('success', 'Update Transaction Successfull!');
+
+        return redirect('/rooms/transactions');
     }
 }

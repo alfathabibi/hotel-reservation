@@ -10,14 +10,6 @@
     <div class="collapse navbar-collapse  w-auto  max-height-vh-100 h-100" id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link  @if($active == 'dashboard') active @endif" href="/dashboard">
-            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="fas fa-tachometer-alt @if($active == 'dashboard') text-white @else text-dark @endif"></i>
-            </div>
-            <span class="nav-link-text ms-1">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link @if($active == 'rooms') active @endif" href="/rooms">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fas fa-bed @if($active == 'rooms') text-white @else text-dark @endif"></i>

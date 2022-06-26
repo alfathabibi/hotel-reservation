@@ -23,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/room/transaction', [RoomController::class, 'createTransaction']);
+Route::get('/room/transaction', [RoomController::class, 'getAllTransaction']);
 Route::get('/room', [RoomController::class, 'getListRooms']);

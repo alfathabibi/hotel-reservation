@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\RoomPhotos;
+use App\Models\RoomTransaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,6 +15,10 @@ class Room extends Model
 
     public function photos(){
         return $this->hasMany(RoomPhotos::class);
+    }
+
+    public function transaction(){
+        return $this->hasMany(RoomTransaction::class);
     }
 
     public function delete(){
